@@ -47,7 +47,7 @@
             <div class="input-group">
                 <label for="video-url">رابط فيديو اليوتيوب</label>
                 <div class="input-wrapper">
-                    <input type="text" id="video-url" placeholder="https://www.youtube.com/watch?v=...">
+                    <input type="text" id="video-url" placeholder="الصق الرابط هنا (مثل youtu.be/...)">
                     <button class="btn-primary" onclick="loadVideo()">عرض</button>
                 </div>
             </div>
@@ -81,33 +81,74 @@
     </div>
     <script>
         let selectedQualityValue = '720';
+
         function extractYouTubeId(url) {
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-            const match = url.match(regExp);
-            return (match && match[2].length === 11) ? match[2] : null;
+            if (!url) return null;
+            url = url.trim();
+
+            // معالجة الروابط المختصرة مثل youtu.be/ID
+            if (url.includes('youtu.be/')) {
+                let parts = url.split('youtu.be/');
+                if (parts[1]) {
+                    let idPart = parts[1].split('?')[0].split('&')[0];
+                    return idPart;
+                }
+            }
+
+            // معالجة الروابط العادية watch?v=ID
+            if (url.includes('watch?v=')) {
+                let parts = url.split('watch?v=');
+                if (parts[1]) {
+                    let idPart = parts[1].split('&')[0].split('?')[0];
+                    return idPart;
+                }
+            }
+
+            // إذا أدخل المستخدم المعرف مباشرة (11 خانة أو نحو ذلك)
+            if (url.length >= 10 && !url.includes('/')) {
+                return url.split('?')[0];
+            }
+
+            return null;
         }
+
         function loadVideo() {
             const urlInput = document.getElementById('video-url').value;
             const videoId = extractYouTubeId(urlInput);
             const videoSection = document.getElementById('videoSection');
             const playerContainer = document.getElementById('playerContainer');
-            if (!videoId) { alert('الرجاء إدخال رابط يوتيوب صحيح وصالح!'); return; }
+
+            if (!videoId) {
+                alert('الرابط غير صالح، تأكد من نسخ رابط يوتيوب كامل.');
+                return;
+            }
+
             videoSection.style.display = 'flex';
             playerContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe>`;
         }
+
         function selectQuality(element, quality) {
-            .document.querySelectorAll('.quality-option').forEach(el => el.classList.remove('selected'));
+            document.querySelectorAll('.quality-option').forEach(el => el.classList.remove('selected'));
             element.classList.add('selected');
             selectedQualityValue = quality;
         }
+
         function startDownload() {
             const startTime = document.getElementById('startTime').value;
             const endTime = document.getElementById('endTime').value;
             const statusMessage = document.getElementById('statusMessage');
-            if(!startTime || !endTime) { alert('الرجاء تحديد أوقات البداية والنهاية للقص.'); return; }
+
+            if(!startTime || !endTime) {
+                alert('الرجاء تحديد أوقات البداية والنهاية للقص.');
+                return;
+            }
+
             statusMessage.style.display = 'block';
             statusMessage.innerText = `جاري قص الجزء من (${startTime} إلى ${endTime}) بجودة ${selectedQualityValue}p...`;
-            setTimeout(() => { statusMessage.innerText = 'تم قص وتحميل الجزء بنجاح إلى جهازك! 🎉'; }, 3000);
+
+            setTimeout(() => {
+                statusMessage.innerText = 'تم قص وتحميل الجزء بنجاح إلى جهازك! 🎉';
+            }, 3000);
         }
     </script>
 </body>
