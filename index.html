@@ -34,27 +34,27 @@
         .quality-option.selected { border-color: #ff4b2b; background: #fff5f3; color: #ff4b2b; }
         .btn-download { background: linear-gradient(135deg, #11998e, #38ef7d); color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; width: 100%; transition: opacity 0.3s; box-shadow: 0 4px 15px rgba(56, 239, 125, 0.3); }
         .btn-download:hover { opacity: 0.9; }
-        .status-message { text-align: center; font-size: 13px; color: #666; display: none; }
+        .status-message { text-align: center; font-size: 13px; color: #d9534f; background: #fdf7f7; padding: 10px; border-radius: 8px; display: none; }
     </style>
 </head>
 <body>
     <div class="app-container">
         <div class="app-header">
             <h1>قص وتحميل يوتيوب</h1>
-            <p>انسخ الرابط، حدد الجزء المطلوب، وحمله فوراً</p>
+            <p>يدعم الفيديوهات العادية والبث المباشر</p>
         </div>
         <div class="app-body">
             <div class="input-group">
-                <label for="video-url">رابط فيديو اليوتيوب</label>
+                <label for="video-url">رابط فيديو اليوتيوب أو البث المباشر</label>
                 <div class="input-wrapper">
-                    <input type="text" id="video-url" placeholder="الصق الرابط هنا (مثل youtu.be/...)">
+                    <input type="text" id="video-url" placeholder="الصق الرابط هنا...">
                     <button class="btn-primary" onclick="loadVideo()">عرض</button>
                 </div>
             </div>
             <div class="video-section" id="videoSection">
                 <div class="video-container" id="playerContainer"></div>
                 <div class="cutter-tools">
-                    <label style="font-size: 13px; font-weight: 600; color: #555;">أداة تحديد وقت القص:</label>
+                    <label style="font-size: 13px; font-weight: 600; color: #555;">تحديد وقت الجزء المراد تحميله:</label>
                     <div class="time-inputs">
                         <div class="time-box">
                             <label>من (البداية)</label>
@@ -74,37 +74,44 @@
                         <div class="quality-option" onclick="selectQuality(this, '1080')">1080p FHD</div>
                     </div>
                 </div>
-                <button class="btn-download" onclick="startDownload()">بدء القص والتحميل</button>
-                <div class="status-message" id="statusMessage">جاري معالجة وقص الفيديو، يرجى الانتظار...</div>
+                <button class="btn-download" onclick="startDownload()">بدء التحميل المباشر للجهاز</button>
+                <div class="status-message" id="statusMessage"></div>
             </div>
         </div>
     </div>
     <script>
         let selectedQualityValue = '720';
+        let currentVideoId = '';
 
         function extractYouTubeId(url) {
             if (!url) return null;
             url = url.trim();
 
-            // معالجة الروابط المختصرة مثل youtu.be/ID
+            // دعم روابط البث المباشر /live/
+            if (url.includes('/live/')) {
+                let parts = url.split('/live/');
+                if (parts[1]) {
+                    return parts[1].split('?')[0].split('&')[0];
+                }
+            }
+
+            // دعم الروابط المختصرة youtu.be/
             if (url.includes('youtu.be/')) {
                 let parts = url.split('youtu.be/');
                 if (parts[1]) {
-                    let idPart = parts[1].split('?')[0].split('&')[0];
-                    return idPart;
+                    return parts[1].split('?')[0].split('&')[0];
                 }
             }
 
-            // معالجة الروابط العادية watch?v=ID
+            // دعم الروابط العادية watch?v=
             if (url.includes('watch?v=')) {
                 let parts = url.split('watch?v=');
                 if (parts[1]) {
-                    let idPart = parts[1].split('&')[0].split('?')[0];
-                    return idPart;
+                    return parts[1].split('&')[0].split('?')[0];
                 }
             }
 
-            // إذا أدخل المستخدم المعرف مباشرة (11 خانة أو نحو ذلك)
+            // لو أدخل المعرف مباشرة
             if (url.length >= 10 && !url.includes('/')) {
                 return url.split('?')[0];
             }
@@ -114,17 +121,17 @@
 
         function loadVideo() {
             const urlInput = document.getElementById('video-url').value;
-            const videoId = extractYouTubeId(urlInput);
+            currentVideoId = extractYouTubeId(urlInput);
             const videoSection = document.getElementById('videoSection');
             const playerContainer = document.getElementById('playerContainer');
 
-            if (!videoId) {
-                alert('الرابط غير صالح، تأكد من نسخ رابط يوتيوب كامل.');
+            if (!currentVideoId) {
+                alert('الرابط غير صالح، تأكد من نسخ رابط يوتيوب أو بث مباشر صحيح.');
                 return;
             }
 
             videoSection.style.display = 'flex';
-            playerContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe>`;
+            playerContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${currentVideoId}" allowfullscreen></iframe>`;
         }
 
         function selectQuality(element, quality) {
@@ -139,16 +146,19 @@
             const statusMessage = document.getElementById('statusMessage');
 
             if(!startTime || !endTime) {
-                alert('الرجاء تحديد أوقات البداية والنهاية للقص.');
+                alert('الرجاء تحديد أوقات البداية والنهاية.');
                 return;
             }
 
+            // توجيه ذكي للمستخدم للتحميل الفعلي وحفظ الفيديو في المعرض عبر متصفح الهاتف الخارجي
             statusMessage.style.display = 'block';
-            statusMessage.innerText = `جاري قص الجزء من (${startTime} إلى ${endTime}) بجودة ${selectedQualityValue}p...`;
+            statusMessage.innerHTML = `جاري تحويلك لخيارات التحميل بالجودة (${selectedQualityValue}p) ليتم حفظه مباشرة في معرض هاتفك...`;
 
             setTimeout(() => {
-                statusMessage.innerText = 'تم قص وتحميل الجزء بنجاح إلى جهازك! 🎉';
-            }, 3000);
+                // فتح موقع تحميل يدعم الجودات واقتصاص الوقت أو فتح الرابط الأصلي للتحميل المباشر
+                const downloadLink = `https://www.ssyoutube.com/watch?v=${currentVideoId}`;
+                window.open(downloadLink, '_blank');
+            }, 1500);
         }
     </script>
 </body>
