@@ -41,7 +41,7 @@
     <div class="app-container">
         <div class="app-header">
             <h1>قص وتحميل يوتيوب</h1>
-            <p>يدعم الإنترنت العادي وبدون VPN</p>
+            <p>سريع، خفيف، وبدون VPN أو روبوت</p>
         </div>
         <div class="app-body">
             <div class="input-group">
@@ -74,7 +74,7 @@
                         <div class="quality-option" onclick="selectQuality(this, '1080')">1080p FHD</div>
                     </div>
                 </div>
-                <button class="btn-download" onclick="startDownload()">بدء التحميل المباشر</button>
+                <button class="btn-download" onclick="startDownload()">بدء التحميل السريع</button>
                 <div class="status-message" id="statusMessage"></div>
             </div>
         </div>
@@ -86,7 +86,7 @@
         function extractYouTubeId(url) {
             if (!url) return null;
             url = url.trim();
-            currentVideoFullUrl = url; // حفظ الرابط الكامل
+            currentVideoFullUrl = url;
 
             if (url.includes('/live/')) {
                 let parts = url.split('/live/');
@@ -138,20 +138,11 @@
             }
 
             statusMessage.style.display = 'block';
-            statusMessage.innerHTML = `جاري فتح خيارات التحميل (جودة ${selectedQualityValue}p) عبر سيرفر سريع وخفيف...`;
+            statusMessage.innerHTML = `جاري فتح صفحة التحميل الآمنة (جودة ${selectedQualityValue}p)...`;
 
             setTimeout(() => {
-                // استخدام بديل خفيف جداً يفتح مباشرة وبدون مشاكل تحقق روبوت أو VPN
-                // إضافة الحرفين y2 قبل youtube في الرابط يفتح موقع y2mate الخفيف والمباشر
-                let cleanUrl = currentVideoFullUrl;
-                let downloadSiteUrl = "";
-
-                if (cleanUrl.includes("youtube.com") || cleanUrl.includes("youtu.be")) {
-                    downloadSiteUrl = cleanUrl.replace("youtube.com", "y2mate.is").replace("youtu.be", "y2mate.is/watch?v=");
-                } else {
-                    downloadSiteUrl = `https://savefrom.net/?url=${encodeURIComponent(cleanUrl)}`;
-                }
-
+                // استخدام بديل مباشر ونظيف وخالٍ من عقبات الروبوت
+                let downloadSiteUrl = `https://loader.to/api/download/?url=${encodeURIComponent(currentVideoFullUrl)}&f=mp4`;
                 window.open(downloadSiteUrl, '_blank');
             }, 1000);
         }
