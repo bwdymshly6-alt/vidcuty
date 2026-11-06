@@ -34,14 +34,14 @@
         .quality-option.selected { border-color: #ff4b2b; background: #fff5f3; color: #ff4b2b; }
         .btn-download { background: linear-gradient(135deg, #11998e, #38ef7d); color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; width: 100%; transition: opacity 0.3s; box-shadow: 0 4px 15px rgba(56, 239, 125, 0.3); }
         .btn-download:hover { opacity: 0.9; }
-        .status-message { text-align: center; font-size: 13px; color: #11998e; background: #e8f8f5; padding: 10px; border-radius: 8px; display: none; font-weight: 600; }
+        .status-message { text-align: center; font-size: 13px; color: #d9534f; background: #fdf7f7; padding: 12px; border-radius: 10px; display: none; font-weight: 600; line-height: 1.6; border: 1px solid #f5c6cb; }
     </style>
 </head>
 <body>
     <div class="app-container">
         <div class="app-header">
             <h1>قص وتحميل يوتيوب</h1>
-            <p>عبر سيرفر آمن ونظيف 100%</p>
+            <p>تحديد دقيق للرابط والجودة</p>
         </div>
         <div class="app-body">
             <div class="input-group">
@@ -54,7 +54,7 @@
             <div class="video-section" id="videoSection">
                 <div class="video-container" id="playerContainer"></div>
                 <div class="cutter-tools">
-                    <label style="font-size: 13px; font-weight: 600; color: #555;">تحديد وقت الجزء المطلوب:</label>
+                    <label style="font-size: 13px; font-weight: 600; color: #555;">تحديد وقت الجزء المطلوب قصه:</label>
                     <div class="time-inputs">
                         <div class="time-box">
                             <label>من (البداية)</label>
@@ -74,7 +74,7 @@
                         <div class="quality-option" onclick="selectQuality(this, '1080')">1080p FHD</div>
                     </div>
                 </div>
-                <button class="btn-download" onclick="startDownload()">الانتقال للتحميل السريع</button>
+                <button class="btn-download" onclick="startDownload()">الانتقال للتحميل ونقل الرابط</button>
                 <div class="status-message" id="statusMessage"></div>
             </div>
         </div>
@@ -137,14 +137,15 @@
                 return;
             }
 
+            // تنبيه ذكي للمستخدم حول نقطة تحميل الفيديو كاملاً عبر المواقع الخارجية
             statusMessage.style.display = 'block';
-            statusMessage.innerHTML = `جاري توجيهك إلى سيرفر التحميل النظيف (جودة ${selectedQualityValue}p)...`;
+            statusMessage.innerHTML = `⚠️ ملاحظة هامة: المواقع الخارجية ستحمل الفيديو كاملاً وليس الجزء المقصوص.<br>جاري فتح صفحة التحميل ونقل الرابط...`;
 
             setTimeout(() => {
-                // توجيه الرابط إلى خدمة cobalt.tools النظيفة والخالية من الإعلانات
+                // فتح موقع Cobalt مع إرفاق الرابط الأساسي لضمان عمله
                 let cobaltUrl = `https://cobalt.tools/?url=${encodeURIComponent(currentVideoFullUrl)}`;
                 window.open(cobaltUrl, '_blank');
-            }, 1000);
+            }, 2000);
         }
     </script>
 </body>
