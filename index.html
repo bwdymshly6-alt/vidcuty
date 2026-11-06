@@ -34,14 +34,14 @@
         .quality-option.selected { border-color: #ff4b2b; background: #fff5f3; color: #ff4b2b; }
         .btn-download { background: linear-gradient(135deg, #11998e, #38ef7d); color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; width: 100%; transition: opacity 0.3s; box-shadow: 0 4px 15px rgba(56, 239, 125, 0.3); }
         .btn-download:hover { opacity: 0.9; }
-        .status-message { text-align: center; font-size: 13px; color: #d9534f; background: #fdf7f7; padding: 10px; border-radius: 8px; display: none; }
+        .status-message { text-align: center; font-size: 13px; color: #11998e; background: #e8f8f5; padding: 10px; border-radius: 8px; display: none; font-weight: 600; }
     </style>
 </head>
 <body>
     <div class="app-container">
         <div class="app-header">
             <h1>قص وتحميل يوتيوب</h1>
-            <p>يدعم الفيديوهات العادية والبث المباشر</p>
+            <p>يدعم الإنترنت العادي وبدون VPN</p>
         </div>
         <div class="app-body">
             <div class="input-group">
@@ -74,64 +74,51 @@
                         <div class="quality-option" onclick="selectQuality(this, '1080')">1080p FHD</div>
                     </div>
                 </div>
-                <button class="btn-download" onclick="startDownload()">بدء التحميل المباشر للجهاز</button>
+                <button class="btn-download" onclick="startDownload()">بدء التحميل المباشر</button>
                 <div class="status-message" id="statusMessage"></div>
             </div>
         </div>
     </div>
     <script>
         let selectedQualityValue = '720';
-        let currentVideoId = '';
+        let currentVideoFullUrl = '';
 
         function extractYouTubeId(url) {
             if (!url) return null;
             url = url.trim();
+            currentVideoFullUrl = url; // حفظ الرابط الكامل
 
-            // دعم روابط البث المباشر /live/
             if (url.includes('/live/')) {
                 let parts = url.split('/live/');
-                if (parts[1]) {
-                    return parts[1].split('?')[0].split('&')[0];
-                }
+                if (parts[1]) return parts[1].split('?')[0].split('&')[0];
             }
-
-            // دعم الروابط المختصرة youtu.be/
             if (url.includes('youtu.be/')) {
                 let parts = url.split('youtu.be/');
-                if (parts[1]) {
-                    return parts[1].split('?')[0].split('&')[0];
-                }
+                if (parts[1]) return parts[1].split('?')[0].split('&')[0];
             }
-
-            // دعم الروابط العادية watch?v=
             if (url.includes('watch?v=')) {
                 let parts = url.split('watch?v=');
-                if (parts[1]) {
-                    return parts[1].split('&')[0].split('?')[0];
-                }
+                if (parts[1]) return parts[1].split('&')[0].split('?')[0];
             }
-
-            // لو أدخل المعرف مباشرة
             if (url.length >= 10 && !url.includes('/')) {
                 return url.split('?')[0];
             }
-
             return null;
         }
 
         function loadVideo() {
             const urlInput = document.getElementById('video-url').value;
-            currentVideoId = extractYouTubeId(urlInput);
+            const videoId = extractYouTubeId(urlInput);
             const videoSection = document.getElementById('videoSection');
             const playerContainer = document.getElementById('playerContainer');
 
-            if (!currentVideoId) {
+            if (!videoId) {
                 alert('الرابط غير صالح، تأكد من نسخ رابط يوتيوب أو بث مباشر صحيح.');
                 return;
             }
 
             videoSection.style.display = 'flex';
-            playerContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${currentVideoId}" allowfullscreen></iframe>`;
+            playerContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe>`;
         }
 
         function selectQuality(element, quality) {
@@ -150,15 +137,23 @@
                 return;
             }
 
-            // توجيه ذكي للمستخدم للتحميل الفعلي وحفظ الفيديو في المعرض عبر متصفح الهاتف الخارجي
             statusMessage.style.display = 'block';
-            statusMessage.innerHTML = `جاري تحويلك لخيارات التحميل بالجودة (${selectedQualityValue}p) ليتم حفظه مباشرة في معرض هاتفك...`;
+            statusMessage.innerHTML = `جاري فتح خيارات التحميل (جودة ${selectedQualityValue}p) عبر سيرفر سريع وخفيف...`;
 
             setTimeout(() => {
-                // فتح موقع تحميل يدعم الجودات واقتصاص الوقت أو فتح الرابط الأصلي للتحميل المباشر
-                const downloadLink = `https://www.ssyoutube.com/watch?v=${currentVideoId}`;
-                window.open(downloadLink, '_blank');
-            }, 1500);
+                // استخدام بديل خفيف جداً يفتح مباشرة وبدون مشاكل تحقق روبوت أو VPN
+                // إضافة الحرفين y2 قبل youtube في الرابط يفتح موقع y2mate الخفيف والمباشر
+                let cleanUrl = currentVideoFullUrl;
+                let downloadSiteUrl = "";
+
+                if (cleanUrl.includes("youtube.com") || cleanUrl.includes("youtu.be")) {
+                    downloadSiteUrl = cleanUrl.replace("youtube.com", "y2mate.is").replace("youtu.be", "y2mate.is/watch?v=");
+                } else {
+                    downloadSiteUrl = `https://savefrom.net/?url=${encodeURIComponent(cleanUrl)}`;
+                }
+
+                window.open(downloadSiteUrl, '_blank');
+            }, 1000);
         }
     </script>
 </body>
