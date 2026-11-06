@@ -41,7 +41,7 @@
     <div class="app-container">
         <div class="app-header">
             <h1>قص وتحميل يوتيوب</h1>
-            <p>سريع، خفيف، وبدون VPN أو روبوت</p>
+            <p>عبر سيرفر آمن ونظيف 100%</p>
         </div>
         <div class="app-body">
             <div class="input-group">
@@ -54,7 +54,7 @@
             <div class="video-section" id="videoSection">
                 <div class="video-container" id="playerContainer"></div>
                 <div class="cutter-tools">
-                    <label style="font-size: 13px; font-weight: 600; color: #555;">تحديد وقت الجزء المراد تحميله:</label>
+                    <label style="font-size: 13px; font-weight: 600; color: #555;">تحديد وقت الجزء المطلوب:</label>
                     <div class="time-inputs">
                         <div class="time-box">
                             <label>من (البداية)</label>
@@ -67,14 +67,14 @@
                     </div>
                 </div>
                 <div class="quality-section">
-                    <label style="font-size: 13px; font-weight: 600; color: #555;">اختر جودة التحميل:</label>
+                    <label style="font-size: 13px; font-weight: 600; color: #555;">اختر الجودة المطلوبة:</label>
                     <div class="quality-options">
                         <div class="quality-option" onclick="selectQuality(this, '360')">360p</div>
                         <div class="quality-option selected" onclick="selectQuality(this, '720')">720p HD</div>
                         <div class="quality-option" onclick="selectQuality(this, '1080')">1080p FHD</div>
                     </div>
                 </div>
-                <button class="btn-download" onclick="startDownload()">بدء التحميل السريع</button>
+                <button class="btn-download" onclick="startDownload()">الانتقال للتحميل السريع</button>
                 <div class="status-message" id="statusMessage"></div>
             </div>
         </div>
@@ -138,12 +138,12 @@
             }
 
             statusMessage.style.display = 'block';
-            statusMessage.innerHTML = `جاري فتح صفحة التحميل الآمنة (جودة ${selectedQualityValue}p)...`;
+            statusMessage.innerHTML = `جاري توجيهك إلى سيرفر التحميل النظيف (جودة ${selectedQualityValue}p)...`;
 
             setTimeout(() => {
-                // استخدام بديل مباشر ونظيف وخالٍ من عقبات الروبوت
-                let downloadSiteUrl = `https://loader.to/api/download/?url=${encodeURIComponent(currentVideoFullUrl)}&f=mp4`;
-                window.open(downloadSiteUrl, '_blank');
+                // توجيه الرابط إلى خدمة cobalt.tools النظيفة والخالية من الإعلانات
+                let cobaltUrl = `https://cobalt.tools/?url=${encodeURIComponent(currentVideoFullUrl)}`;
+                window.open(cobaltUrl, '_blank');
             }, 1000);
         }
     </script>
